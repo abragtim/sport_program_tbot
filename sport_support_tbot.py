@@ -3,7 +3,7 @@ from programs_storage import TxtStorage
 from telebot import TeleBot
 
 
-def main(token):
+def run_bot_server(token):
     bot = TeleBot(token)
 
     storage_tool = TxtStorage()
@@ -114,4 +114,4 @@ def main(token):
 
 
 if __name__ == '__main__':
-    main('TOKEN')
+    run_bot_server('TOKEN')
