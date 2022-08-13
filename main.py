@@ -1,4 +1,4 @@
-from typing import Type
+import time
 from telebot import TeleBot
 
 
@@ -7,13 +7,11 @@ def main(token):
     # TODO: do with SQL db
     users_programs = {}
 
-
     @bot.message_handler(commands=['start', 'help'])
     def tbot_welcome_message(message):
         ''' Welcome new user '''
         bot.reply_to(
             message, "Hello! Write /set_program to create individual program.")
-
 
     @bot.message_handler(commands=['set_program'])
     def tbot_set_sport_program(message):
@@ -51,7 +49,6 @@ def main(token):
                      f'''Use "/program {exercises[0][1]}" ''' +
                      "to this personal program.")
 
-
     @bot.message_handler(commands=['program'])
     def tbot_start_sport_program(message):
         ''' Start individual program '''
@@ -64,27 +61,52 @@ def main(token):
             bot.reply_to(message, f"Program {pr_name} doesn't exist!")
 
         # starting program
-        for ex in users_programs[message.chat.id][pr_name]:
-            msg = f'Do {ex[0]} '
+        exercises = users_programs[message.chat.id][pr_name]
+        counter = 0
+
+        def _do_exercise(message):
+            nonlocal counter, exercises
+
+            ex = exercises[counter]
+            msg = f'Do {ex[0]}'
             if ex[1] != '-':
                 # repeats argument exists
                 try:
                     ex_repeats = int(ex[1])
-                    msg += f'{ex_repeats} times '
+                    msg += f' {ex_repeats} times'
                 except TypeError:
                     pass
+
+            ex_timer = 0
             if ex[2] != '-':
                 # timer argument exists
                 try:
-                    ex_timer = int(ex[2])
-                    # TODO: timer msg
+                    ex_timer = int(ex[2]) * 60  # minuntes
+                    msg += f' for {int(ex_timer / 60)} minutes'
                 except TypeError:
-                    pass
-            bot.send_message(message.chat.id, msg)
+                    ex_timer = 0
 
+            bot.send_message(message.chat.id, msg + '.')
+            if ex_timer > 0:
+                time.sleep(ex_timer)
+                bot.send_message(message.chat.id, f'Time for {ex[0]} is over!')
 
+            counter += 1
+            if counter >= len(exercises):
+                # program is over
+                bot.send_message(
+                    message.chat.id, f'The program is over! Good job.')
+            else:
+                # recursive continue
+                bot.send_message(message.chat.id,
+                                 'Send something to move on to the next exercise.')
+                bot.register_next_step_handler(message, _do_exercise)
+
+        _do_exercise(message)
+
+    # polling start
     bot.infinity_polling()
 
 
 if __name__ == '__main__':
-    main('')
+    main('5574461747:AAHJIIrPduAeOlB-6fdjTYBj13N1PWN2BP8')
