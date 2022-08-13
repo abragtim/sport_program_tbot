@@ -59,7 +59,7 @@ def main(token):
             bot.reply_to(message, "Write /program <program's name>")
             return None
         pr_name = message.text.split(' ')[1]
-        if pr_name not in users_programs[message.chat.id]:
+        if pr_name not in users_programs[message.chat.id].keys():
             bot.reply_to(message, f"Program {pr_name} doesn't exist!")
 
         # starting program
