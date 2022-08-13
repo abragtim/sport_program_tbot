@@ -117,4 +117,4 @@ def run_bot_server(token):
 
 
 if __name__ == '__main__':
-    run_bot_server('TOKEN')
+    run_bot_server('5574461747:AAHzXtdGS6AC2gidbEEFbBLgqIC4gr7u8A8')
