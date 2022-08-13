@@ -1,11 +1,13 @@
 import time
+from programs_storage import TxtStorage
 from telebot import TeleBot
 
 
 def main(token):
     bot = TeleBot(token)
-    # TODO: do with SQL db
-    users_programs = {}
+
+    storage_tool = TxtStorage()
+    users_programs = storage_tool.storage  # dictionary {}
 
     @bot.message_handler(commands=['start', 'help'])
     def tbot_welcome_message(message):
@@ -105,8 +107,11 @@ def main(token):
         _do_exercise(message)
 
     # polling start
-    bot.infinity_polling()
+    try:
+        bot.infinity_polling()
+    finally:
+        del storage_tool.storage
 
 
 if __name__ == '__main__':
-    main('5574461747:AAHJIIrPduAeOlB-6fdjTYBj13N1PWN2BP8')
+    main('TOKEN')
