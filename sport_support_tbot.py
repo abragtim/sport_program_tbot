@@ -4,6 +4,7 @@ from telebot import TeleBot
 
 
 def run_bot_server(token):
+    ''' Main process. Bot running '''
     bot = TeleBot(token)
 
     storage_tool = TxtStorage()
@@ -67,6 +68,7 @@ def run_bot_server(token):
         counter = 0
 
         def _do_exercise(message):
+            ''' Do exercises recursively '''
             nonlocal counter, exercises
 
             ex = exercises[counter]
@@ -110,6 +112,7 @@ def run_bot_server(token):
     try:
         bot.infinity_polling()
     finally:
+        # saving storage to the file
         del storage_tool.storage
 
 
