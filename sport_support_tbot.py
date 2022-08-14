@@ -1,3 +1,4 @@
+from itertools import count
 import time
 from programs_storage import TxtStorage
 from telebot import TeleBot
@@ -16,9 +17,9 @@ def run_bot_server(token):
         bot.reply_to(
             message, "Hello! Write /set_program to create individual program.")
 
-    @bot.message_handler(commands=['set_program'])
-    def tbot_set_sport_program(message):
-        ''' Create individual program '''
+    #@bot.message_handler(commands=['old_set_program'])
+    def tbot_set_sport_program_old(message):
+        ''' Create individual program. Old version '''
         exercises = [ex.split(' ') for ex in message.text.split('\n')]
         usage_msg = 'Use: /set_program <program_name>\n' + \
                     '<1st exercise name> <repeats> <timer in minutes>\n' + \
@@ -39,7 +40,7 @@ def run_bot_server(token):
                 bot.reply_to(message, usage_msg)
                 return None
 
-        if not message.chat.id in users_programs.keys():
+        if message.chat.id not in users_programs.keys():
             users_programs[message.chat.id] = {}
         users_programs[message.chat.id][exercises[0][1]] = \
             [(exercises[i][0],
@@ -52,11 +53,78 @@ def run_bot_server(token):
                      f'''Use "/program {exercises[0][1]}" ''' +
                      "to this personal program.")
 
+    @bot.message_handler(commands=['set_program'])
+    def tbot_set_sport_program(message):
+        ''' Create individual program '''
+        exercises = [] # list for fulling
+        counter = 1 # counter of exercises
+        program_name = None
+
+        def _get_program_name_step(message):
+            ''' Get program_name and go to the exercise-parsing '''
+            if message.chat.id not in users_programs.keys():
+                users_programs[message.chat.id] = {}
+            nonlocal program_name, counter
+            program_name = message.text
+            users_programs[message.chat.id][message.text] = []
+            bot.send_message(message.chat.id,
+                             f'Add the {counter}. exercise by sending a message like\n\n' +
+                             'NAME REPEATS MINUTES\n\n' +
+                             'Example: push-ups 10 2 (that means "Do push-ups 10 times for 2 minutes)".\n' +
+                             'To skip useless option type "-" instead.')
+            bot.register_next_step_handler(
+                message, _get_exercise_step)
+
+        def _get_exercise_step(message):
+            ''' Get exercises step by step recursively '''
+            nonlocal program_name, counter
+            if counter > 1 and message.text == 'Done':
+                # stop recursive creation of the program
+                msg = f'Program {program_name}:\n\n'
+                for ex in users_programs[message.chat.id][program_name]:
+                    msg += f'{ex[0]}: {ex[1]} times for {ex[2]} minutes.\n'
+                bot.send_message(message.chat.id, msg)
+                return
+
+            exercise = message.text.split()
+            try:
+                if exercise[1] != '-':
+                    int(exercise[1])
+                if exercise[2] != '-':
+                    int(exercise[2])
+                if len(exercise) < 3:
+                    raise ValueError
+            except (ValueError, IndexError):
+                # wrong format of requested message
+                bot.send_message(message.chat.id,
+                                 'Usage:\n\n' +
+                                 'NAME REPEATS MINUTES\n\n' +
+                                 'Example: push-ups 10 2 (that means "Do push-ups 10 times for 2 minutes)".')
+                bot.register_next_step_handler(
+                    message, _get_exercise_step)
+                return
+            # adding exercise to the program
+            users_programs[message.chat.id][program_name].append(
+                (exercise[0], exercise[1], exercise[2]))
+            counter += 1
+            # going to the next exercise
+            bot.send_message(message.chat.id,
+                             f'Add the {counter}. exercise by sending a message like\n\n' +
+                             'NAME REPEATS MINUTES\n\n' +
+                             'Example: push-ups 10 2 (that means "Do push-ups 10 times for 2 minutes)".\n' +
+                             'To skip useless option type "-" instead.\n' +
+                             'To stop creating a program send "Done".')
+            bot.register_next_step_handler(
+                message, _get_exercise_step)
+
+        bot.reply_to(message, "What is the name of your program?")
+        bot.register_next_step_handler(message, _get_program_name_step)
+
     @bot.message_handler(commands=['program'])
     def tbot_start_sport_program(message):
         ''' Start individual program '''
         # check args
-        if len(message.text) < 2:
+        if len(message.text.split(' ')) < 2:
             bot.reply_to(message, "Write /program <program's name>")
             return None
         pr_name = message.text.split(' ')[1]
