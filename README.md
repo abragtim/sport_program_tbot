@@ -16,10 +16,8 @@ https://t.me/sport_supporting_bot
 
  # Create sport program 
 
-    /set_program <program-name>
-    <do _ > <_ times> <for _ minutes>
-    ...
-    <do _ > <_ times> <for _ minutes>
+    /set_program
+    
 
 # Run created program
 
