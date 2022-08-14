@@ -1,4 +1,4 @@
-# sport_program_tbot
+# Sport Supporting Telegram bot
  Telegram bot to support your individual sport program.
 https://t.me/sport_supporting_bot
 
