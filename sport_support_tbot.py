@@ -1,4 +1,3 @@
-from itertools import count
 import time
 from programs_storage import TxtStorage
 from telebot import TeleBot
