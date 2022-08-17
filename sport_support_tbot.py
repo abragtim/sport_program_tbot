@@ -125,9 +125,8 @@ def run_bot_server(token):
 
         def __get_program_name(message):
             ''' Get name of program for "/program program_name" '''
-            # start program
-            message.text = '/program' + message.text
-            tbot_set_sport_program(message)
+            message.text = '/program ' + message.text
+            tbot_start_sport_program(message)  # continue
 
         # check args
         if len(message.text.split(' ')) < 2:
@@ -135,11 +134,18 @@ def run_bot_server(token):
             bot.reply_to(
                 message, "What is the name of the program you want to start?")
             bot.register_next_step_handler(message, __get_program_name)
-            bot.reply_to(message, "Write /program <program's name>")
             return None
         pr_name = message.text.split(' ')[1]
         if pr_name not in users_programs[message.chat.id].keys():
-            bot.reply_to(message, f"Program {pr_name} doesn't exist!")
+            # program doesn't exist -> get existing programs
+            existing_programs = ''
+            for program in users_programs[message.chat.id].keys():
+                existing_programs += program
+                existing_programs += '\n'
+            bot.reply_to(
+                message, f"Program {pr_name} doesn't exist!\n\n" +
+                'Existing programs:\n' +
+                existing_programs)
             return None
 
         # starting program
