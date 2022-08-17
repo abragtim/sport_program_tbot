@@ -16,7 +16,7 @@ def run_bot_server(token):
         bot.reply_to(
             message, "Hello! Write /set_program to create individual program.")
 
-    #@bot.message_handler(commands=['old_set_program'])
+    # @bot.message_handler(commands=['old_set_program'])
     def tbot_set_sport_program_old(message):
         ''' Create individual program. Old version '''
         exercises = [ex.split(' ') for ex in message.text.split('\n')]
@@ -55,8 +55,8 @@ def run_bot_server(token):
     @bot.message_handler(commands=['set_program'])
     def tbot_set_sport_program(message):
         ''' Create individual program '''
-        exercises = [] # list for fulling
-        counter = 1 # counter of exercises
+        exercises = []  # list for fulling
+        counter = 1  # counter of exercises
         program_name = None
 
         def _get_program_name_step(message):
@@ -122,13 +122,24 @@ def run_bot_server(token):
     @bot.message_handler(commands=['program'])
     def tbot_start_sport_program(message):
         ''' Start individual program '''
+
+        def __get_program_name(message):
+            ''' Get name of program for "/program program_name" '''
+            # start program
+            tbot_set_sport_program('/program' + message)
+
         # check args
         if len(message.text.split(' ')) < 2:
+            # need /program program_name format
+            bot.reply_to(
+                message, "What is the name of the program you want to start?")
+            bot.register_next_step_handler(message, __get_program_name)
             bot.reply_to(message, "Write /program <program's name>")
             return None
         pr_name = message.text.split(' ')[1]
         if pr_name not in users_programs[message.chat.id].keys():
             bot.reply_to(message, f"Program {pr_name} doesn't exist!")
+            return None
 
         # starting program
         exercises = users_programs[message.chat.id][pr_name]
