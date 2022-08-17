@@ -126,7 +126,8 @@ def run_bot_server(token):
         def __get_program_name(message):
             ''' Get name of program for "/program program_name" '''
             # start program
-            tbot_set_sport_program('/program' + message)
+            message.text = '/program' + message.text
+            tbot_set_sport_program(message)
 
         # check args
         if len(message.text.split(' ')) < 2:
