@@ -2,7 +2,7 @@ import time
 from programs_storage import TxtStorage
 from telebot import TeleBot
 
-TOKEN = 'TOKEN' # write your TOKEN from BotFather
+TOKEN = 'TOKEN'  # write your TOKEN from BotFather
 
 bot = TeleBot(TOKEN)
 storage_tool = TxtStorage()
