@@ -7,8 +7,8 @@ storage_filename = '_programs.data'  # direction for programs save
 # TODO: do with database SQL later
 
 
-class StorageDescriptor():
-    ''' Descriptor for saving sport programs in text file '''
+class StorageDescriptor:
+    """ Descriptor for saving sport programs in text file """
 
     def __init__(self, filename: str):
         self.users_programs = {}
@@ -52,6 +52,6 @@ class StorageDescriptor():
         del self
 
 
-class TxtStorage():
-    ''' Saving sport programs in text file storage_filename '''
+class TxtStorage:
+    """ Saving sport programs in text file storage_filename """
     storage = StorageDescriptor(storage_filename)
