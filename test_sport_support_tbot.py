@@ -1,4 +1,5 @@
 import unittest
+import sport_support_tbot
 
 
 class TestSportBot(unittest.TestCase):
