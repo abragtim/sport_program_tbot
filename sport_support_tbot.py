@@ -2,7 +2,7 @@ import time
 from programs_storage import TxtStorage
 from telebot import TeleBot
 
-TOKEN = 'TOKEN'
+TOKEN = 'TOKEN' # write your TOKEN from BotFather
 
 bot = TeleBot(TOKEN)
 storage_tool = TxtStorage()
@@ -184,4 +184,4 @@ def tbot_start_sport_program(message):
 
 
 if __name__ == '__main__':
-    run_bot_server('TOKEN')
+    run_bot_server()
